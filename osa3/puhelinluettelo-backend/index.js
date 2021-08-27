@@ -1,7 +1,14 @@
 const express = require('express')
+const morgan = require('morgan')
+
+morgan.token('data', function getId (req) {
+  return JSON.stringify(req.body)
+})
+
 const app = express()
 
 app.use(express.json())
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms :data'))
 
 let persons = [
   {
@@ -97,7 +104,6 @@ app.post('/api/persons', (request, response) => {
 
   response.json(persons)
 })
-
 
 app.delete('/api/persons/:id', (request, response) => {
   const id = Number(request.params.id)
