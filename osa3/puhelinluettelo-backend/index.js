@@ -1,5 +1,6 @@
 const express = require('express')
 const morgan = require('morgan')
+const cors = require('cors')
 
 morgan.token('data', function getId (req) {
   return JSON.stringify(req.body)
@@ -8,6 +9,7 @@ morgan.token('data', function getId (req) {
 const app = express()
 
 app.use(express.json())
+app.use(cors())
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :data'))
 
 let persons = [
@@ -102,7 +104,21 @@ app.post('/api/persons', (request, response) => {
 
   persons = persons.concat(person)
 
-  response.json(persons)
+  response.json(person)
+})
+
+app.put('/api/persons/:id', (request, response) => {
+  const id = Number(request.params.id)
+  const person = persons.find(person => person.id === id)
+
+  if (person) {
+    console.log("OK")
+    person.number = request.body.number
+    response.json(person)
+  } else {
+    response.status(404).end()
+  }
+
 })
 
 app.delete('/api/persons/:id', (request, response) => {
